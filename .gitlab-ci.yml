@@ -1,0 +1,22 @@
+stages:
+  - deploy
+
+deploy_backend:
+  stage: deploy
+  image: docker:latest
+  only:
+    - main
+  script:
+    - echo "🚀 Deploying Backend..."
+  
+    # สั่ง build โดยชี้ไปที่โฟลเดอร์ backend (สังเกต ./backend)
+    - docker build -t my-backend ./backend
+    
+    # ลบตัวเก่า (ถ้ามี)
+    - docker rm -f my-backend-container || true
+    
+    # รันใหม่ (Map พอร์ตตามที่ Backend คุณเขียนไว้ สมมติว่าเป็น 3000)
+    # ถ้า Backend คุณใช้พอร์ตอื่น ให้แก้เลข 3000 ตัวหลังนะครับ
+    - docker run -d -p 3000:3000 --name my-backend-container --network app_net my-backend
+    
+    - echo "✅ Backend Deployed!"
